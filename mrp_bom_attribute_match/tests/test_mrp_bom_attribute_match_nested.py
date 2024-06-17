@@ -82,6 +82,17 @@ class TestMrpBomAttributeMatchNested(TestMrpBomAttributeMatchBase):
 
     def test_nested(self):
         BomStructureReport = self.env["report.mrp.report_bom_structure"]
-
+        values_top = BomStructureReport._get_report_values(
+            self.bom_top.ids,
+            data={"variant": self.bom_top.product_tmpl_id.product_variant_id.id},
+        )
+        values_sub = BomStructureReport._get_report_values(
+            self.bom_sub.ids,
+            data={"variant": self.bom_sub.product_tmpl_id.product_variant_id.id},
+        )
+        self.assertIn("Sub Sub 1", str(values_top["docs"][0]["lines"]))
+        self.assertIn("Sub-Level", str(values_top["docs"][0]["lines"]))
+        self.assertIn("Sub Sub 1", str(values_sub["docs"][0]["lines"]))
+        self.assertNotIn("Sub-Level", str(values_sub["docs"][0]["lines"]))
         BomStructureReport._get_report_data(self.bom_sub.id)
         BomStructureReport._get_report_data(self.bom_top.id)
